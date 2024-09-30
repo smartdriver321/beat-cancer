@@ -5,6 +5,7 @@ import { usePrivy } from '@privy-io/react-auth'
 import { useStateContext } from './context'
 import { Home, Onboarding, Profile } from './pages'
 import MedicalRecords from './pages/medical-records/index'
+import SingleRecordDetails from './pages/medical-records/single-record-details'
 
 import { Navbar, Sidebar } from './components'
 
@@ -37,6 +38,10 @@ export default function App() {
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/medical-records" element={<MedicalRecords />} />
+          <Route
+            path="/medical-records/:id"
+            element={<SingleRecordDetails />}
+          />
         </Routes>
       </div>
     </div>

@@ -1,67 +1,69 @@
-import React, { useState } from "react";
+import React, { useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { GoogleGenerativeAI } from '@google/generative-ai'
+import ReactMarkdown from 'react-markdown'
 import {
   IconChevronRight,
   IconFileUpload,
   IconProgress,
-} from "@tabler/icons-react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useStateContext } from "../../context/index";
-import ReactMarkdown from "react-markdown";
-import FileUploadModal from "./components/file-upload-modal";
-import RecordDetailsHeader from "./components/record-details-header";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+} from '@tabler/icons-react'
 
-const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY;
+import { useStateContext } from '../../context/index'
+import FileUploadModal from './components/file-upload-modal'
+import RecordDetailsHeader from './components/record-details-header'
 
-function SingleRecordDetails() {
-  const { state } = useLocation();
-  const navigate = useNavigate();
-  const [file, setFile] = useState(null);
-  const [uploading, setUploading] = useState(false);
-  const [uploadSuccess, setUploadSuccess] = useState(false);
-  const [processing, setIsProcessing] = useState(false);
+const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY
+
+export default function SingleRecordDetails() {
+  const navigate = useNavigate()
+  const { state } = useLocation()
+
+  const [file, setFile] = useState(null)
+  const [uploading, setUploading] = useState(false)
+  const [uploadSuccess, setUploadSuccess] = useState(false)
+  const [processing, setIsProcessing] = useState(false)
   const [analysisResult, setAnalysisResult] = useState(
-    state.analysisResult || "",
-  );
-  const [filename, setFilename] = useState("");
-  const [filetype, setFileType] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
+    state.analysisResult || '',
+  )
+  const [filename, setFilename] = useState('')
+  const [filetype, setFileType] = useState('')
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const { updateRecord } = useStateContext();
+  const { updateRecord } = useStateContext()
 
   const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
+    setIsModalOpen(true)
+  }
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+    setIsModalOpen(false)
+  }
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    console.log("Selected file:", file);
-    setFileType(file.type);
-    setFilename(file.name);
-    setFile(file);
-  };
+    const file = e.target.files[0]
+    console.log('Selected file:', file)
+    setFileType(file.type)
+    setFilename(file.name)
+    setFile(file)
+  }
 
   const readFileAsBase64 = (file) => {
     return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result.split(",")[1]);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  };
+      const reader = new FileReader()
+      reader.onload = () => resolve(reader.result.split(',')[1])
+      reader.onerror = reject
+      reader.readAsDataURL(file)
+    })
+  }
 
   const handleFileUpload = async () => {
-    setUploading(true);
-    setUploadSuccess(false);
+    setUploading(true)
+    setUploadSuccess(false)
 
-    const genAI = new GoogleGenerativeAI(geminiApiKey);
+    const genAI = new GoogleGenerativeAI(geminiApiKey)
 
     try {
-      const base64Data = await readFileAsBase64(file);
+      const base64Data = await readFileAsBase64(file)
 
       const imageParts = [
         {
@@ -70,42 +72,43 @@ function SingleRecordDetails() {
             mimeType: filetype,
           },
         },
-      ];
+      ]
 
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' })
 
       const prompt = `You are an expert cancer and any disease diagnosis analyst. Use your knowledge base to answer questions about giving personalized recommended treatments.
         give a detailed treatment plan for me, make it more readable, clear and easy to understand make it paragraphs to make it more readable
-        `;
+        `
 
-      const result = await model.generateContent([prompt, ...imageParts]);
-      const response = await result.response;
-      const text = response.text();
-      setAnalysisResult(text);
+      const result = await model.generateContent([prompt, ...imageParts])
+      const response = await result.response
+      const text = response.text()
+      setAnalysisResult(text)
       const updatedRecord = await updateRecord({
         documentID: state.id,
         analysisResult: text,
-        kanbanRecords: "",
-      });
-      setUploadSuccess(true);
-      setIsModalOpen(false); // Close the modal after a successful upload
-      setFilename("");
-      setFile(null);
-      setFileType("");
+        kanbanRecords: '',
+      })
+
+      setUploadSuccess(true)
+      setIsModalOpen(false) // Close the modal after a successful upload
+      setFilename('')
+      setFile(null)
+      setFileType('')
     } catch (error) {
-      console.error("Error uploading file:", error);
-      setUploadSuccess(false);
+      console.error('Error uploading file:', error)
+      setUploadSuccess(false)
     } finally {
-      setUploading(false);
+      setUploading(false)
     }
-  };
+  }
 
   const processTreatmentPlan = async () => {
-    setIsProcessing(true);
+    setIsProcessing(true)
 
-    const genAI = new GoogleGenerativeAI(geminiApiKey);
+    const genAI = new GoogleGenerativeAI(geminiApiKey)
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' })
 
     const prompt = `Your role and goal is to be an that will be using this treatment plan ${analysisResult} to create Columns:
                 - Todo: Tasks that need to be started
@@ -131,23 +134,23 @@ function SingleRecordDetails() {
                   ]
                 }
                             
-                `;
+                `
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-    const parsedResponse = JSON.parse(text);
+    const result = await model.generateContent(prompt)
+    const response = await result.response
+    const text = response.text()
+    const parsedResponse = JSON.parse(text)
 
-    console.log(text);
-    console.log(parsedResponse);
+    console.log(text)
+    console.log(parsedResponse)
     const updatedRecord = await updateRecord({
       documentID: state.id,
       kanbanRecords: text,
-    });
-    console.log(updatedRecord);
-    navigate("/screening-schedules", { state: parsedResponse });
-    setIsProcessing(false);
-  };
+    })
+    console.log(updatedRecord)
+    navigate('/screening-schedules', { state: parsedResponse })
+    setIsProcessing(false)
+  }
 
   return (
     <div className="flex flex-wrap gap-[26px]">
@@ -211,7 +214,7 @@ function SingleRecordDetails() {
                 <div className="grid gap-3 border-t border-gray-200 px-6 py-4 md:flex md:items-center md:justify-between dark:border-neutral-700">
                   <div>
                     <p className="text-sm text-gray-600 dark:text-neutral-400">
-                      <span className="font-semibold text-gray-800 dark:text-neutral-200"></span>{" "}
+                      <span className="font-semibold text-gray-800 dark:text-neutral-200"></span>{' '}
                     </p>
                   </div>
                   <div>
@@ -224,7 +227,5 @@ function SingleRecordDetails() {
         </div>
       </div>
     </div>
-  );
+  )
 }
-
-export default SingleRecordDetails;
