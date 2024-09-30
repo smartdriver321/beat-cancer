@@ -1,10 +1,14 @@
 import React, { useState } from 'react'
+import { usePrivy } from '@privy-io/react-auth'
 
 export default function OnboardingPage() {
+  const { user } = usePrivy()
+
   const [username, setUsername] = useState('')
   const [age, setAge] = useState('')
   const [location, setLocation] = useState('')
 
+  console.log(user)
   const handleOnboarding = async (e) => {
     e.preventDefault()
     console.log(username, age, location)
