@@ -1,11 +1,11 @@
 import React, { useCallback, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { usePrivy } from '@privy-io/react-auth'
 import { IconHeartHandshake } from '@tabler/icons-react'
 
 import { menu, search } from '../assets'
-import CustomButton from './CustomButton'
-import { useNavigate } from 'react-router-dom'
 import { navlinks } from '../constants'
+import CustomButton from './CustomButton'
 
 export default function Navbar() {
   const { authenticated, login, user, logout } = usePrivy()
