@@ -3,7 +3,7 @@ import { Route, Routes } from 'react-router-dom'
 
 import Sidebar from './components/Sidebar'
 import Navbar from './components/Navbar'
-import Home from './pages/Home'
+import { Home } from './pages'
 
 export default function App() {
   return (
