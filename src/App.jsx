@@ -7,6 +7,7 @@ import { Home, Onboarding, Profile } from './pages'
 import MedicalRecords from './pages/medical-records/index'
 import SingleRecordDetails from './pages/medical-records/single-record-details'
 
+import ScreeningSchedule from './pages/ScreeningSchedule'
 import { Navbar, Sidebar } from './components'
 
 export default function App() {
@@ -42,6 +43,7 @@ export default function App() {
             path="/medical-records/:id"
             element={<SingleRecordDetails />}
           />
+          <Route path="/screening-schedules" element={<ScreeningSchedule />} />
         </Routes>
       </div>
     </div>
