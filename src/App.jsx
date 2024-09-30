@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react'
 import { Route, Routes, useNavigate } from 'react-router-dom'
+import { usePrivy } from '@privy-io/react-auth'
 
 import { useStateContext } from './context'
-import { Home, Onboarding } from './pages'
+import { Home, Onboarding, Profile } from './pages'
 import { Navbar, Sidebar } from './components'
-import { usePrivy } from '@privy-io/react-auth'
 
 export default function App() {
   const navigate = useNavigate()
@@ -33,6 +33,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </div>
     </div>
