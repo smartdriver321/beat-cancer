@@ -1,9 +1,8 @@
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
-import Sidebar from './components/Sidebar'
-import Navbar from './components/Navbar'
-import { Home } from './pages'
+import { Home, Onboarding } from './pages'
+import { Navbar, Sidebar } from './components'
 
 export default function App() {
   return (
@@ -17,6 +16,7 @@ export default function App() {
 
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/onboarding" element={<Onboarding />} />
         </Routes>
       </div>
     </div>
