@@ -1,13 +1,18 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { IconCirclePlus } from '@tabler/icons-react'
 import { usePrivy } from '@privy-io/react-auth'
 
 import { useStateContext } from '../../context'
+import RecordCard from './components/record-card'
 
 export default function Index() {
   const { user } = usePrivy()
+  const navigate = useNavigate()
 
-  const { fetchUserRecords, fetchUserByEmail } = useStateContext()
+  const [userRecords, setUserRecords] = useState([])
+
+  const { records, fetchUserRecords, fetchUserByEmail } = useStateContext()
 
   useEffect(() => {
     if (user) {
@@ -15,6 +20,20 @@ export default function Index() {
       fetchUserRecords(user.email.address)
     }
   }, [user, fetchUserByEmail, fetchUserRecords])
+
+  useEffect(() => {
+    setUserRecords(records)
+    localStorage.setItem('userRecords', JSON.stringify(records))
+  }, [records])
+
+  const handleNavigate = (name) => {
+    const filteredRecords = userRecords.filter(
+      (record) => record.recordName === name,
+    )
+    navigate(`/medical-records/${name}`, {
+      state: filteredRecords[0],
+    })
+  }
 
   return (
     <div className="flex flex-wrap gap-[26px]">
@@ -26,6 +45,16 @@ export default function Index() {
         <IconCirclePlus />
         Create Record
       </button>
+
+      <div className="grid w-full gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
+        {userRecords?.map((record) => (
+          <RecordCard
+            key={record.recordName}
+            record={record}
+            onNavigate={handleNavigate}
+          />
+        ))}
+      </div>
     </div>
   )
 }
