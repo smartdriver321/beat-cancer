@@ -5,14 +5,22 @@ import { usePrivy } from '@privy-io/react-auth'
 
 import { useStateContext } from '../../context'
 import RecordCard from './components/record-card'
+import CreateRecordModal from './components/create-record-modal'
 
 export default function Index() {
   const { user } = usePrivy()
   const navigate = useNavigate()
 
   const [userRecords, setUserRecords] = useState([])
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const { records, fetchUserRecords, fetchUserByEmail } = useStateContext()
+  const {
+    records,
+    fetchUserRecords,
+    createRecord,
+    fetchUserByEmail,
+    currentUser,
+  } = useStateContext()
 
   useEffect(() => {
     if (user) {
@@ -25,6 +33,36 @@ export default function Index() {
     setUserRecords(records)
     localStorage.setItem('userRecords', JSON.stringify(records))
   }, [records])
+
+  const createFolder = async (foldername) => {
+    try {
+      if (currentUser) {
+        const newRecord = await createRecord({
+          userId: currentUser.id,
+          recordName: foldername,
+          analysisResult: '',
+          kanbanRecords: '',
+          createdBy: user.email.address,
+        })
+
+        if (newRecord) {
+          fetchUserRecords(user.email.address)
+          handleCloseModal()
+        }
+      }
+    } catch (e) {
+      console.log(e)
+      handleCloseModal()
+    }
+  }
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true)
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+  }
 
   const handleNavigate = (name) => {
     const filteredRecords = userRecords.filter(
@@ -40,11 +78,17 @@ export default function Index() {
       <button
         type="button"
         className="mt-6 inline-flex items-center gap-x-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-800 shadow-sm hover:bg-gray-50 disabled:pointer-events-none disabled:opacity-50 dark:border-neutral-700 dark:bg-[#13131a] dark:text-white dark:hover:bg-neutral-800"
-        onClick={() => {}}
+        onClick={handleOpenModal}
       >
         <IconCirclePlus />
         Create Record
       </button>
+
+      <CreateRecordModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onCreate={createFolder}
+      />
 
       <div className="grid w-full gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
         {userRecords?.map((record) => (
