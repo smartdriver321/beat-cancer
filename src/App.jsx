@@ -12,10 +12,10 @@ import { Navbar, Sidebar } from './components'
 
 export default function App() {
   const navigate = useNavigate()
-  const { user, authenticated, ready, login } = usePrivy()
-  console.log(user)
+  //const { user, authenticated, ready, login } = usePrivy()
 
-  const { currentUser } = useStateContext()
+  const { user, authenticated, ready, login, currentUser } = useStateContext()
+  console.log(user)
 
   useEffect(() => {
     if (ready && !authenticated) {
