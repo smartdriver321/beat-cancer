@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react'
 import { Route, Routes, useNavigate } from 'react-router-dom'
-import { usePrivy } from '@privy-io/react-auth'
 
 import { useStateContext } from './context'
 import { Home, Onboarding, Profile } from './pages'
@@ -12,7 +11,6 @@ import { Navbar, Sidebar } from './components'
 
 export default function App() {
   const navigate = useNavigate()
-  //const { user, authenticated, ready, login } = usePrivy()
 
   const { user, authenticated, ready, login, currentUser } = useStateContext()
   console.log(user)
@@ -23,7 +21,7 @@ export default function App() {
     } else if (user && !currentUser) {
       navigate('/onboarding')
     }
-  }, [ready, currentUser, navigate])
+  }, [ready, currentUser, navigate, user, authenticated, login])
 
   return (
     <div className="sm:-8 relative flex min-h-screen flex-row bg-[#13131a] p-4">
