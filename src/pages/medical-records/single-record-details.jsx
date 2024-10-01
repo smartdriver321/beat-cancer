@@ -84,6 +84,7 @@ export default function SingleRecordDetails() {
       const response = await result.response
       const text = response.text()
       setAnalysisResult(text)
+      // eslint-disable-next-line no-unused-vars
       const updatedRecord = await updateRecord({
         documentID: state.id,
         analysisResult: text,
